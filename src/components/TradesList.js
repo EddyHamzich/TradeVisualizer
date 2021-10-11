@@ -44,9 +44,7 @@ export const TradesList = () => {
         <ul>
           {messageHistory.current.map((dataObj) => {
             if(dataObj) {
-              return dataObj
-                ? <TradeItem key={dataObj.a} data={dataObj} />
-                : null
+              return <TradeItem key={dataObj.a} data={dataObj} />
             }
             else {
               return null

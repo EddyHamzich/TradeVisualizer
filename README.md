@@ -1,2 +1,2 @@
 # Trade Visualizer
-## This app shows aggregated Bitcoin futures trades in a more visually entertaining way.
+### This app shows aggregated Bitcoin futures trades in a more visually entertaining way.
