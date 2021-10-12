@@ -16,8 +16,27 @@ interface IBinanceData {
 }
 
 export const TradesList = (): JSX.Element => {
-  const { gifs } = useGiphy(25, "money")
+  const tradesToKeepInMemory = 50;
+  const { gifs } = useGiphy(tradesToKeepInMemory, "money")
   const messageHistory = useRef<IBinanceData[]>([])
+
+  //eslint-disable-next-line
+  const { lastMessage, readyState } = useWebSocket(
+    "wss://fstream.binance.com/ws/btcusdt@aggTrade",
+    {onMessage: (msg) => {
+      if(msg) {
+        let parsed: IBinanceData = JSON.parse(msg.data)
+        let dollarQty: number = +parsed.q * +parsed.p
+        parsed.gif = gifs[Math.floor(Math.random() * tradesToKeepInMemory)]
+
+        if(dollarQty > qtyFilter) {
+          messageHistory.current.unshift(parsed)
+          // only keep last 50 trades in memory
+          messageHistory.current = messageHistory.current.slice(0,tradesToKeepInMemory)
+        }
+      }
+    }}
+  )
 
   const [qtyFilter, setQtyFilter] = useLocalStorage("qtyFilter", 50000)
 
@@ -38,26 +57,6 @@ export const TradesList = (): JSX.Element => {
         .filter(x => +x.q * +x.p >= qtyFilter - 10000)
     }
   }
-
-  //eslint-disable-next-line
-  const { lastMessage, readyState } = useWebSocket(
-    "wss://fstream.binance.com/ws/btcusdt@aggTrade",
-    {onMessage: (msg) => {
-      if(msg) {
-
-        let parsed: IBinanceData = JSON.parse(msg.data)
-        let dollarQty: number = +parsed.q * +parsed.p
-        parsed.gif = gifs[Math.floor(Math.random() * 25)]
-
-        if(dollarQty > qtyFilter) {
-          messageHistory.current.unshift(parsed)
-          // only keep last 50 trades in memory
-          messageHistory.current = messageHistory.current.slice(0,50)
-        }
-
-      }
-    }}
-  )
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: "Connecting...",
