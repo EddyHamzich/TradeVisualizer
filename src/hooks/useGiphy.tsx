@@ -14,6 +14,7 @@ export const useGiphy = (howMany: number, keyword: string): { gifs: string[], lo
   
   const baseURL = "https://api.giphy.com/v1/gifs"
   const key = "&api_key=FxXQpnTRThkWImh93DG7bFk4CwO4gDXz"
+  // api key is free, so whatever
   
   useEffect(() => {
     async function getGifs() {
