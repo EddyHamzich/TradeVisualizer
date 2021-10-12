@@ -4,8 +4,6 @@ import { Flex, Heading } from "@chakra-ui/react";
 export const Navbar = (): JSX.Element => {
   return (
     <Flex
-      onClick={() => window.location.reload()}
-      cursor="pointer"
       className="navbar"
       bg="#1A1A2E"
       h="10vh"
@@ -13,8 +11,12 @@ export const Navbar = (): JSX.Element => {
       justifyContent="center"
       alignItems="center"
     >
-      <Heading fontWeight="light">
-          Trade Visualizer
+      <Heading
+        fontWeight="light"
+        onClick={() => window.location.reload()}
+        cursor="pointer"
+      >
+        Trade Visualizer
       </Heading>
     </Flex>
   )
