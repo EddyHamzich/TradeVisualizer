@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { Button, Box, Text, Flex } from "@chakra-ui/react";
 import { TradeItem } from "./TradeItem";
 import { useGiphy } from "../hooks/useGiphy";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import { formatCash } from "../util/formatCash";
 
 interface IBinanceData {
@@ -17,7 +18,8 @@ interface IBinanceData {
 export const TradesList = (): JSX.Element => {
   const { gifs } = useGiphy(25, "money")
   const messageHistory = useRef<IBinanceData[]>([])
-  const [qtyFilter, setQtyFilter] = useState<number>(50000)
+
+  const [qtyFilter, setQtyFilter] = useLocalStorage("qtyFilter", 50000)
 
   const incrementFilter = () => {
     if(qtyFilter < 1000000) {
@@ -29,7 +31,7 @@ export const TradesList = (): JSX.Element => {
   }
 
   const decrementFilter = () => {
-    if(qtyFilter > 10000) {
+    if(qtyFilter > 0) {
       setQtyFilter(qtyFilter - 10000)
 
       messageHistory.current = messageHistory.current
