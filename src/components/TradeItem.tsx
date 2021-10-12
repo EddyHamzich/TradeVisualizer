@@ -6,18 +6,17 @@ import { format as timeago } from "timeago.js";
 import "./TradeItemAnim.css";
 
 interface IBinanceData {
-  q: number,
-  p: number,
-  m: boolean,
-  T: number,
-  gif: string,
+  data: {
+    a: number,
+    q: string,
+    p: string,
+    m: boolean,
+    T: number,
+    gif: string,
+  }
 }
 
-interface IProps {
-  data: IBinanceData
-}
-
-export const TradeItem = ({ data }: IProps): JSX.Element => {
+export const TradeItem = ({ data }: IBinanceData): JSX.Element => {
   const dollarQty: number = +data.q * +data.p
   const displayGif: boolean = dollarQty >= 200000
 

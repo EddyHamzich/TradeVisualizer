@@ -1,13 +1,14 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { Box, Text, Flex } from "@chakra-ui/react";
+import { Button, Box, Text, Flex } from "@chakra-ui/react";
 import { TradeItem } from "./TradeItem";
 import { useGiphy } from "../hooks/useGiphy";
+import { formatCash } from "../util/formatCash";
 
 interface IBinanceData {
-  a: string,
-  q: number,
-  p: number,
+  a: number,
+  q: string,
+  p: string,
   m: boolean,
   T: number,
   gif: string,
@@ -15,8 +16,26 @@ interface IBinanceData {
 
 export const TradesList = (): JSX.Element => {
   const { gifs } = useGiphy(25, "money")
-  const qtyFilter = 50000
   const messageHistory = useRef<IBinanceData[]>([])
+  const [qtyFilter, setQtyFilter] = useState<number>(50000)
+
+  const incrementFilter = () => {
+    if(qtyFilter < 1000000) {
+      setQtyFilter(qtyFilter + 10000)
+
+      messageHistory.current = messageHistory.current
+        .filter(x => +x.q * +x.p >= qtyFilter + 10000)
+    }
+  }
+
+  const decrementFilter = () => {
+    if(qtyFilter > 10000) {
+      setQtyFilter(qtyFilter - 10000)
+
+      messageHistory.current = messageHistory.current
+        .filter(x => +x.q * +x.p >= qtyFilter - 10000)
+    }
+  }
 
   //eslint-disable-next-line
   const { lastMessage, readyState } = useWebSocket(
@@ -49,6 +68,15 @@ export const TradesList = (): JSX.Element => {
   return (
     <Flex justifyContent="center">
       <Box w="500px">
+        <Text color="white" p={2} textAlign="center">
+          Show amounts above: <Text as="span" fontWeight="bold">${formatCash(qtyFilter)}</Text>
+          <Button size="sm" ml={2} colorScheme="green" onClick={incrementFilter}>
+            +
+          </Button>
+          <Button size="sm" ml={2} colorScheme="red" onClick={decrementFilter}>
+            -
+          </Button>
+        </Text>
         <Text color="white" p={2} textAlign="center">
           Connection: {connectionStatus} | Binance Futures BTCUSDT
         </Text>
