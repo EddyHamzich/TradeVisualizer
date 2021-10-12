@@ -55,6 +55,8 @@ export const TradeItem = ({ data }: IProps): JSX.Element => {
             .replace("minute", "m")
             .replace("hours", "h")
             .replace("hour", "h")
+            .replace("justnow", "just now")
+            .replace("rightnow", "right now")
         }
       </Text>
     </Flex>
