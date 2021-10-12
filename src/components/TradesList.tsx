@@ -17,14 +17,14 @@ interface IBinanceData {
 
 export const TradesList = (): JSX.Element => {
   const tradesToKeepInMemory = 50;
-  const { gifs } = useGiphy(tradesToKeepInMemory, "money")
+  const { gifs, loading } = useGiphy(tradesToKeepInMemory, "money")
   const messageHistory = useRef<IBinanceData[]>([])
 
   //eslint-disable-next-line
   const { lastMessage, readyState } = useWebSocket(
     "wss://fstream.binance.com/ws/btcusdt@aggTrade",
     {onMessage: (msg) => {
-      if(msg) {
+      if(msg && !loading) {
         let parsed: IBinanceData = JSON.parse(msg.data)
         let dollarQty: number = +parsed.q * +parsed.p
         parsed.gif = gifs[Math.floor(Math.random() * tradesToKeepInMemory)]
@@ -43,7 +43,6 @@ export const TradesList = (): JSX.Element => {
   const incrementFilter = () => {
     if(qtyFilter < 1000000) {
       setQtyFilter(qtyFilter + 10000)
-
       messageHistory.current = messageHistory.current
         .filter(x => +x.q * +x.p >= qtyFilter + 10000)
     }
@@ -52,7 +51,6 @@ export const TradesList = (): JSX.Element => {
   const decrementFilter = () => {
     if(qtyFilter > 0) {
       setQtyFilter(qtyFilter - 10000)
-
       messageHistory.current = messageHistory.current
         .filter(x => +x.q * +x.p >= qtyFilter - 10000)
     }
@@ -69,21 +67,24 @@ export const TradesList = (): JSX.Element => {
   return (
     <Flex justifyContent="center">
       <Box w="500px">
+
         <Text color="white" p={2} textAlign="center">
           Show amounts above: <Text as="span" fontWeight="bold">${formatCash(qtyFilter)}</Text>
-          <Button size="sm" ml={2} colorScheme="green" onClick={incrementFilter}>
+          <Button onClick={incrementFilter} size="sm" fontSize={20} ml={3} pb={1} w="36px" colorScheme="green">
             +
           </Button>
-          <Button size="sm" ml={2} colorScheme="red" onClick={decrementFilter}>
+          <Button onClick={decrementFilter} size="sm" fontSize={20} ml={3} pb={1} w="36px" colorScheme="red">
             -
           </Button>
         </Text>
+
         <Text color="white" p={2} textAlign="center">
           Connection: {connectionStatus} | Binance Futures BTCUSDT
         </Text>
+
         <ul>
           {messageHistory.current.map((dataObj: IBinanceData) => {
-            if(dataObj) {
+            if(dataObj.a) {
               return <TradeItem key={dataObj.a} data={dataObj} />
             }
             else {
@@ -91,6 +92,7 @@ export const TradesList = (): JSX.Element => {
             }
           })}
         </ul>
+
       </Box>
     </Flex>
   )

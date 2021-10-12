@@ -3,6 +3,7 @@ import { Flex, Text } from "@chakra-ui/react";
 import { getQtyColor } from "../util/getQtyColor";
 import { formatCash } from "../util/formatCash";
 import { format as timeago } from "timeago.js";
+import { shorterTimeago } from "../util/shorterTimeago";
 import "./TradeItemAnim.css";
 
 interface IBinanceData {
@@ -45,18 +46,7 @@ export const TradeItem = ({ data }: IBinanceData): JSX.Element => {
         <i className="fas fa-dollar-sign"></i>{" " + formatCash(dollarQty)}
       </Text>
       <Text className="time-ago" w="20%" {...textStyle}>
-        {
-          timeago(data.T)
-            .replace(" ", "")
-            .replace("seconds", "s")
-            .replace("second", "s")
-            .replace("minutes", "m")
-            .replace("minute", "m")
-            .replace("hours", "h")
-            .replace("hour", "h")
-            .replace("justnow", "just now")
-            .replace("rightnow", "right now")
-        }
+        {shorterTimeago(timeago(data.T))}
       </Text>
     </Flex>
   )
