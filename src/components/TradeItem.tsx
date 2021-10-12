@@ -5,11 +5,21 @@ import { formatCash } from "../util/formatCash";
 import { format as timeago } from "timeago.js";
 import "./TradeItemAnim.css";
 
-export const TradeItem = ({ data }) => {
+interface IBinanceData {
+  q: number,
+  p: number,
+  m: boolean,
+  T: number,
+  gif: string,
+}
 
-  const dollarQty = +data.q * +data.p
+interface IProps {
+  data: IBinanceData
+}
 
-  const displayGif = dollarQty >= 200000
+export const TradeItem = ({ data }: IProps): JSX.Element => {
+  const dollarQty: number = +data.q * +data.p
+  const displayGif: boolean = dollarQty >= 200000
 
   const textStyle = {
     fontWeight: "medium",
@@ -21,7 +31,7 @@ export const TradeItem = ({ data }) => {
     <Flex
       className="fade-in-top"
       bgColor={data.m ? getQtyColor(dollarQty, "sell") : getQtyColor(dollarQty, "buy")}
-      bgImage={displayGif ? `url(${data.gif})` : null}
+      bgImage={displayGif ? `url(${data.gif})` : undefined}
       p={3}
       bgSize="cover"
       bgRepeat="no-repeat"

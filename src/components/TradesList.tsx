@@ -4,25 +4,36 @@ import { Box, Text, Flex } from "@chakra-ui/react";
 import { TradeItem } from "./TradeItem";
 import { useGiphy } from "../hooks/useGiphy";
 
-export const TradesList = () => {
+interface IBinanceData {
+  a: string,
+  q: number,
+  p: number,
+  m: boolean,
+  T: number,
+  gif: string,
+}
 
+export const TradesList = (): JSX.Element => {
   const { gifs } = useGiphy(25, "money")
   const qtyFilter = 50000
-  const messageHistory = useRef([])
+  const messageHistory = useRef<IBinanceData[]>([])
 
   //eslint-disable-next-line
-  const { _, readyState } = useWebSocket(
+  const { lastMessage, readyState } = useWebSocket(
     "wss://fstream.binance.com/ws/btcusdt@aggTrade",
     {onMessage: (msg) => {
       if(msg) {
-        let parsed = JSON.parse(msg.data)
-        let dollarQty = +parsed.q * +parsed.p
+
+        let parsed: IBinanceData = JSON.parse(msg.data)
+        let dollarQty: number = +parsed.q * +parsed.p
         parsed.gif = gifs[Math.floor(Math.random() * 25)]
+
         if(dollarQty > qtyFilter) {
           messageHistory.current.unshift(parsed)
           // only keep last 50 trades in memory
           messageHistory.current = messageHistory.current.slice(0,50)
         }
+
       }
     }}
   )
@@ -42,7 +53,7 @@ export const TradesList = () => {
           Connection: {connectionStatus} | Binance Futures BTCUSDT
         </Text>
         <ul>
-          {messageHistory.current.map((dataObj) => {
+          {messageHistory.current.map((dataObj: IBinanceData) => {
             if(dataObj) {
               return <TradeItem key={dataObj.a} data={dataObj} />
             }
